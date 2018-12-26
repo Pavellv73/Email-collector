@@ -1,0 +1,30 @@
+{
+  "name": "raevo_email",
+  "version": "1.0.0",
+  "description": "Вёрстка электронных писем для DOM.RU",
+  "author": "MST <mail@mstagency.ru>",
+  "private": true,
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "build": "",
+    "start": "gulp"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.7",
+    "del": "^2.2.2",
+    "gulp": "^4.0.0",
+    "gulp-debug": "^3.0.0",
+    "gulp-inline-css": "^3.3.0",
+    "gulp-notify": "^3.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-pug": "^3.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "pug": "^2.0.0-rc.1"
+  },
+  "dependencies": {
+    "foundation-emails": "^2.2.1"
+  }
+}
