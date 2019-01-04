@@ -25,6 +25,7 @@
     "pug": "^2.0.0-rc.1"
   },
   "dependencies": {
-    "foundation-emails": "^2.2.1"
+    "foundation-emails": "^2.2.1",
+    "npm": "^6.5.0"
   }
 }
