@@ -1,14 +1,14 @@
 {
-  "name": "raevo_email",
+  "name": "email_collector",
   "version": "1.0.0",
-  "description": "Вёрстка электронных писем для DOM.RU",
-  "author": "MST <mail@mstagency.ru>",
+  "description": "Collector emails",
+  "author": "Pavellv (lp@mstagency.ru)",
   "private": true,
   "engines": {
     "node": ">=4"
   },
   "scripts": {
-    "build": "",
+    "build": "build",
     "start": "gulp"
   },
   "devDependencies": {

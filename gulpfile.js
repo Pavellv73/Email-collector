@@ -5,7 +5,6 @@ var gulp = require('gulp'), // Gulp
     debug = require('gulp-debug'), // Отслеживание работы тасков в терминале
     del = require('del'), // Удаление папок и файлов
     inlineCss = require('gulp-inline-css'), // Создание инлайн-стилей
-    notify = require("gulp-notify"), // Вывод надписей при ошибках
     plumber = require('gulp-plumber'), // Обработка ошибок
     pug = require('gulp-pug'), // Pug
     sass = require('gulp-sass'); // Sass
