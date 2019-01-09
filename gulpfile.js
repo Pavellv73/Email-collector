@@ -17,22 +17,22 @@ var paths = {
   },
   watch: {
     html: './assets/pug/**/*.pug', // Путь для вотчера Pug-файлов
-    css: './assets/sass/**/*.scss' // Путь для вотчера Sass-файлов
+    css: './assets/scss/**/*.scss' // Путь для вотчера Sass-файлов
   },
   assets: {
     html: { // Пути для таска html
       src: './assets/pug/*.pug', // Путь к Pug-файлам для таска html
-      dest: './assets/layout' // Место сохранения html-шаблона письма
+      dest: './assets/html' // Место сохранения html-шаблона письма
     },
     css: { // Пути для таска css
       src: [ // Путь к Sass-файлам для таска css
-        './assets/sass/styles/inline.scss',
+        './assets/scss/inline.scss',
       ],
       dest: './assets/css' // Место сохранения CSS-файлов
     }
   },
   dist: { // Пути для production
-    src: './assets/layout/*.html', // Исходный HTML-шаблон письма из development-папки
+    src: './assets/html/*.html', // Исходный HTML-шаблон письма из development-папки
     dest: './build' // Место сохранения HTML-шаблона с встроенными инлайн-стилями для production
   }
 }
@@ -46,7 +46,6 @@ gulp.task('server', function() {
   browserSync.init({
     server: { // Настройки сервера
       baseDir: paths.dir.assets, // Базовая директория
-      index: 'index.html' // Индексный файл
     }
   });
   gulp.watch([paths.watch.html, paths.watch.css], gulp.series('build')); // Отслеживание изменений Pug и Sass-файлов
@@ -60,7 +59,6 @@ gulp.task('html', function() {
     .pipe(debug({title: 'Pug source'})) // Отслеживание исходника таска html
     .pipe(pug({
       pretty: true, // Форматирование разметки в HTML-файле
-      doctype: 'HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"' // Установка doctype (setting of doctype)
     }))
     .pipe(debug({title: 'Pug'})) // Отслеживание работы плагина Pug
     .pipe(gulp.dest(paths.assets.html.dest)) // Сохранение HTML-шаблона письма в папке assets
@@ -80,11 +78,6 @@ gulp.task('css', function() {
     .pipe(browserSync.stream()); // Browsersync
 });
 
-// Таск для предварительной очистки (удаления) production-папки
-gulp.task('clean', function() {
-  return del(paths.dir.dist);
-});
-
 // Таск для формирования инлайн-стилей из внешнего файла inline.css (task for creating of inline styles):
 gulp.task('inline', function() {
   return gulp.src(paths.dist.src) // Исходник для таска inline
@@ -95,8 +88,13 @@ gulp.task('inline', function() {
         assetslyTableAttributes: true // Преобразование табличных стилей в атрибуты (conversion of table styles in attributes)
     }))
     .pipe(debug({title: 'Inline CSS'})) // Отслеживание преобразования
-    .pipe(gulp.dest(paths.dist.dest)) // Сохранение результатов в production-папку dist
+    .pipe(gulp.dest(paths.dist.dest)) // Сохранение результатов в build-папку dist
     .pipe(debug({title: 'Inline CSS dest'})); // Отслеживание сохранения
+});
+
+// Таск для предварительной очистки (удаления) build-папки
+gulp.task('clean', function() {
+  return del(paths.dir.dist);
 });
 
 // Таск для сборки
