@@ -16,8 +16,8 @@ var paths = {
     dist: './build' // Путь к production-папке
   },
   watch: {
-    html: './assets/pug/**/*.pug', // Путь для вотчера Pug-файлов
-    css: './assets/scss/**/*.scss' // Путь для вотчера Sass-файлов
+    html: './assets/pug/*.pug', // Путь для вотчера Pug-файлов
+    css: './assets/scss/*.scss' // Путь для вотчера Sass-файлов
   },
   assets: {
     html: { // Пути для таска html
@@ -42,10 +42,11 @@ var browserSync = require('browser-sync').create(),
     reload = browserSync.reload;
 
 // Таск для работы Browsersync, автообновление браузера
-gulp.task('server', function() {
+gulp.task('serve', function() {
   browserSync.init({
     server: { // Настройки сервера
-      baseDir: paths.dir.assets, // Базовая директория
+      baseDir: paths.dir.dist, // Базовая директория
+      index: ('index.html'),
     }
   });
   gulp.watch([paths.watch.html, paths.watch.css], gulp.series('build')); // Отслеживание изменений Pug и Sass-файлов
@@ -101,4 +102,4 @@ gulp.task('clean', function() {
 gulp.task('build', gulp.series('html', 'css', 'clean', 'inline'));
 
 // Таск для запуска разработки
-gulp.task('default', gulp.series('build', 'server'));
+gulp.task('default', gulp.series('build', 'serve'));
