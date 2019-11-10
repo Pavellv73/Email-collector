@@ -12,6 +12,7 @@ nbproject
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
+package-lock.json
 
 # Folder config file
 Desktop.ini
