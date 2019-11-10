@@ -42,6 +42,14 @@ var paths = {
 var browserSync = require('browser-sync').create(),
     reload = browserSync.reload;
 
+// Адрес для тестирования
+var emailOptions = {
+  key: '',
+  sender: '',
+  recipient: '',
+  subject: 'This is a test email'
+};
+
 // Таск для работы Browsersync, автообновление браузера (Browsersync task, autoreload of browser):
 gulp.task('serve', function() {
   browserSync.init({
@@ -81,6 +89,19 @@ gulp.task('css', function() {
     .pipe(browserSync.stream()); // Browsersync
 });
 
+// gulp.task('clean-images', function () {
+//   return gulp.src('assets/img', {read: false})
+//     .pipe($.clean());
+// });
+
+gulp.task('images', function () {
+  return gulp.src('assets/img/**/*')
+    .pipe($.imagemin({
+      progressive: true
+    }))
+    .pipe(gulp.dest('build/img'));
+});
+
 // Таск для предварительной очистки (удаления) production-папки (task for delete of production folder dist):
 gulp.task('clean', function() {
   return del(paths.dir.dist);
@@ -100,8 +121,16 @@ gulp.task('inline', function() {
     .pipe(debug({title: 'Inline CSS dest'})); // Отслеживание сохранения (saving tracking)
 });
 
-// Таск для сборки (task for build):
-gulp.task('build', gulp.series('html', 'css', 'clean', 'inline'));
+gulp.task('send-email', function () {
+  gulp.src('build/index.html')
+    .pipe($.mailgun(emailOptions));
+});
 
 // Таск для запуска разработки (task for lounch of development):
-gulp.task('default', gulp.series('build', 'serve'));
+gulp.task('default', gulp.series('html', 'css', 'clean', 'inline', 'serve'));
+
+// Таск для сборки (task for build):
+gulp.task('build', gulp.series('images'));
+
+// Таск для тестовой отправки письма
+gulp.task('test', gulp.series('send-email'));
