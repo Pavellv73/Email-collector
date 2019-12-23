@@ -5,10 +5,11 @@ var gulp = require('gulp'), // Gulp
     debug = require('gulp-debug'), // Отслеживание работы тасков в терминале (operation tracking of tasks in terminal)
     del = require('del'), // Удаление папок и файлов (delete of folders and files)
     inlineCss = require('gulp-inline-css'), // Создание инлайн-стилей (creating of inline styles)
-    notify = require("gulp-notify"), // Вывод надписей при ошибках (displaying errors)
     plumber = require('gulp-plumber'), // Обработка ошибок (error handling)
     pug = require('gulp-pug'), // Pug
-    sass = require('gulp-sass'); // Sass
+    sass = require('gulp-sass'), // Sass
+    imagemin = require('gulp-imagemin'), // imagemin
+    clean = require('gulp-clean');
 
 // Задание путей к используемым файлам и папкам (paths to folders and files):
 var paths = {
@@ -23,13 +24,13 @@ var paths = {
   app: {
     html: { // Пути для таска html (paths for html task)
       src: './assets/pug/*.pug', // Путь к Pug-файлам для таска html (path for html task to Pug files)
-      dest: './assets/html' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
+      dest: './assets/build/html' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
     },
     css: { // Пути для таска css (paths for css task)
       src: [ // Путь к Sass-файлам для таска css (path for css task to Sass files)
         './assets/sass/inline.scss',
       ],
-      dest: './assets/css' // Место сохранения CSS-файлов (place of saving CSS files)
+      dest: './assets/build/css' // Место сохранения CSS-файлов (place of saving CSS files)
     }
   },
   dist: { // Пути для production (paths for production)
@@ -55,7 +56,7 @@ gulp.task('serve', function() {
   browserSync.init({
     server: { // Настройки сервера (server settings)
       baseDir: paths.dir.app, // Базовая директория (basic directory)
-      index: 'index.html' // Индексный файл (index file)
+      index: 'assets/html/index.html' // Индексный файл (index file)
     }
   });
   gulp.watch([paths.watch.html, paths.watch.css], gulp.series('build')); // Отслеживание изменений Pug и Sass-файлов (change tracking of Pug and Sass files)
@@ -89,19 +90,6 @@ gulp.task('css', function() {
     .pipe(browserSync.stream()); // Browsersync
 });
 
-// gulp.task('clean-images', function () {
-//   return gulp.src('assets/img', {read: false})
-//     .pipe($.clean());
-// });
-
-gulp.task('images', function () {
-  return gulp.src('assets/img/**/*')
-    .pipe($.imagemin({
-      progressive: true
-    }))
-    .pipe(gulp.dest('build/img'));
-});
-
 // Таск для предварительной очистки (удаления) production-папки (task for delete of production folder dist):
 gulp.task('clean', function() {
   return del(paths.dir.dist);
@@ -126,11 +114,25 @@ gulp.task('send-email', function () {
     .pipe($.mailgun(emailOptions));
 });
 
-// Таск для запуска разработки (task for lounch of development):
-gulp.task('default', gulp.series('html', 'css', 'clean', 'inline', 'serve'));
+gulp.task('clean-images', function () {
+  return gulp.src('assets/images', {read: false})
+    .pipe(clean());
+});
 
-// Таск для сборки (task for build):
-gulp.task('build', gulp.series('images'));
+gulp.task('images', function () {
+  return gulp.src('assets/images/**/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/images'));
+});
+
+// Таск для сборки
+gulp.task('build', gulp.series('html', 'css', 'clean', 'inline'));
+
+// Таск для запуска разработки
+gulp.task('default', gulp.series('build', 'serve'));
+
+// Таск для сжатия картинок
+gulp.task('images', gulp.series('clean-images', 'images'));
 
 // Таск для тестовой отправки письма
 gulp.task('test', gulp.series('send-email'));
