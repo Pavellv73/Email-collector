@@ -24,13 +24,11 @@ var paths = {
   app: {
     html: { // Пути для таска html (paths for html task)
       src: './assets/pug/*.pug', // Путь к Pug-файлам для таска html (path for html task to Pug files)
-      dest: './assets/build/html' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
+      dest: './build/html' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
     },
     css: { // Пути для таска css (paths for css task)
-      src: [ // Путь к Sass-файлам для таска css (path for css task to Sass files)
-        './assets/sass/inline.scss',
-      ],
-      dest: './assets/build/css' // Место сохранения CSS-файлов (place of saving CSS files)
+      src: './assets/sass/inline.scss', // Путь к Sass-файлам для таска css (path for css task to Sass files)
+      dest: './build/css' // Место сохранения CSS-файлов (place of saving CSS files)
     }
   },
   dist: { // Пути для production (paths for production)
@@ -51,12 +49,17 @@ var emailOptions = {
   subject: 'This is a test email'
 };
 
+// Таск для предварительной очистки (удаления) production-папки (task for delete of production folder dist):
+gulp.task('clean', function() {
+  return del(paths.dir.dist);
+});
+
 // Таск для работы Browsersync, автообновление браузера (Browsersync task, autoreload of browser):
 gulp.task('serve', function() {
   browserSync.init({
     server: { // Настройки сервера (server settings)
-      baseDir: paths.dir.app, // Базовая директория (basic directory)
-      index: 'assets/html/index.html' // Индексный файл (index file)
+      baseDir: paths.dir.dist, // Базовая директория (basic directory)
+      index: '/html/index.html' // Индексный файл (index file)
     }
   });
   gulp.watch([paths.watch.html, paths.watch.css], gulp.series('build')); // Отслеживание изменений Pug и Sass-файлов (change tracking of Pug and Sass files)
@@ -90,11 +93,6 @@ gulp.task('css', function() {
     .pipe(browserSync.stream()); // Browsersync
 });
 
-// Таск для предварительной очистки (удаления) production-папки (task for delete of production folder dist):
-gulp.task('clean', function() {
-  return del(paths.dir.dist);
-});
-
 // Таск для формирования инлайн-стилей из внешнего файла inline.css (task for creating of inline styles):
 gulp.task('inline', function() {
   return gulp.src(paths.dist.src) // Исходник для таска inline (inline task source)
@@ -126,7 +124,7 @@ gulp.task('images', function () {
 });
 
 // Таск для сборки
-gulp.task('build', gulp.series('html', 'css', 'clean', 'inline'));
+gulp.task('build', gulp.series('clean', 'html', 'css', 'inline'));
 
 // Таск для запуска разработки
 gulp.task('default', gulp.series('build', 'serve'));
