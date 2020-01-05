@@ -1,27 +1,2 @@
 @import "./foundation-emails.scss";
 @import "./variables.scss";
-
-table.body {
-  width: 100%;
-  max-width: 768px;
-  margin: 0 auto;
-  Margin: 0 auto;
-  background: #fff;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin: 0 auto;
-  Margin: 0 auto;
-  padding: 0;
-  Padding: 0;
-  max-width: 768px;
-  width: 100%;
-  line-height: 1.5;
-
-  &.row {
-    margin: 0 auto;
-    Margin: 0 auto;
-  }
-}

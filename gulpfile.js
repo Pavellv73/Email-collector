@@ -14,25 +14,32 @@ var gulp = require('gulp'), // Gulp
 // Задание путей к используемым файлам и папкам (paths to folders and files):
 var paths = {
   dir: {
-    app: './assets', // Путь к development-папке (path to development folder)
+    assets: './assets', // Путь к development-папке (path to development folder)
     dist: './build' // Путь к production-папке (path to production folder)
   },
   watch: {
     html: './assets/pug/**/*.pug', // Путь для вотчера Pug-файлов (path for watcher to Pug files)
     css: './assets/sass/**/*.scss' // Путь для вотчера Sass-файлов (path for watcher to Sass files)
   },
-  app: {
+  assets: {
     html: { // Пути для таска html (paths for html task)
       src: './assets/pug/*.pug', // Путь к Pug-файлам для таска html (path for html task to Pug files)
-      dest: './build/html' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
+      dest: './assets' // Место сохранения html-шаблона письма (place of saving html template of e-mail)
     },
     css: { // Пути для таска css (paths for css task)
-      src: './assets/sass/inline.scss', // Путь к Sass-файлам для таска css (path for css task to Sass files)
-      dest: './build/css' // Место сохранения CSS-файлов (place of saving CSS files)
+      src: [ // Путь к Sass-файлам для таска css (path for css task to Sass files)
+        './assets/sass/inline.scss',
+      ],
+      dest: './assets/css' // Место сохранения CSS-файлов (place of saving CSS files)
+    },
+    images: {
+      src: './assets/images/*',
+      clr: './build/images/*',
+      dest: './build/images/'
     }
   },
   dist: { // Пути для production (paths for production)
-    src: './assets/*.html', // Исходный HTML-шаблон письма из development-папки (source html template of e-mail from development folder app)
+    src: './assets/*.html', // Исходный HTML-шаблон письма из development-папки (source html template of e-mail from development folder assets)
     dest: './build' // Место сохранения HTML-шаблона с встроенными инлайн-стилями для production (place of saving HTML template with inline styles for production)
   }
 }
@@ -43,23 +50,24 @@ var browserSync = require('browser-sync').create(),
 
 // Адрес для тестирования
 var emailOptions = {
-  key: '',
-  sender: '',
-  recipient: '',
+  key: '6f4beb0a-134cb876',
+  sender: 'frust73@mail.ru',
+  recipient: 'pasharus73@gmail.com',
   subject: 'This is a test email'
 };
 
 // Таск для предварительной очистки (удаления) production-папки (task for delete of production folder dist):
 gulp.task('clean', function() {
-  return del(paths.dir.dist);
+  return gulp.src(paths.dir.dist, {read: true})
+    .pipe(clean());
 });
 
 // Таск для работы Browsersync, автообновление браузера (Browsersync task, autoreload of browser):
-gulp.task('serve', function() {
+gulp.task('server', function() {
   browserSync.init({
     server: { // Настройки сервера (server settings)
       baseDir: paths.dir.dist, // Базовая директория (basic directory)
-      index: '/html/index.html' // Индексный файл (index file)
+      index: '/index.html' // Индексный файл (index file)
     }
   });
   gulp.watch([paths.watch.html, paths.watch.css], gulp.series('build')); // Отслеживание изменений Pug и Sass-файлов (change tracking of Pug and Sass files)
@@ -68,7 +76,7 @@ gulp.task('serve', function() {
 
 // Таск для работы Pug, преобразование Pug в HTML (Pug to HTML conversion task):
 gulp.task('html', function() {
-  return gulp.src(paths.app.html.src) // Исходник таска html (source of html task)
+  return gulp.src(paths.assets.html.src) // Исходник таска html (source of html task)
     .pipe(plumber()) // Обработка ошибок таска html (error handling of html task)
     .pipe(debug({title: 'Pug source'})) // Отслеживание исходника таска html (source tracking of html task)
     .pipe(pug({
@@ -76,19 +84,19 @@ gulp.task('html', function() {
       doctype: 'HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"' // Установка doctype (setting of doctype)
     }))
     .pipe(debug({title: 'Pug'})) // Отслеживание работы плагина Pug (operation tracking of Pug plugin)
-    .pipe(gulp.dest(paths.app.html.dest)) // Сохранение HTML-шаблона письма в папке app (save of HTML template in folder app)
+    .pipe(gulp.dest(paths.assets.html.dest)) // Сохранение HTML-шаблона письма в папке assets (save of HTML template in folder assets)
     .pipe(debug({title: 'Pug dest'})) // Отслеживание сохранения HTML-шаблона (saving tracking of HTML template)
     .pipe(browserSync.stream()); // Browsersync
 });
 
 // Таск для работы Sass, преобразование Sass в CSS (Sass to CSS conversion task):
 gulp.task('css', function() {
-  return gulp.src(paths.app.css.src) // Исходник таска css (css task source)
+  return gulp.src(paths.assets.css.src) // Исходник таска css (css task source)
     .pipe(plumber()) // Обработка ошибок таска css (error handling of css task)
     .pipe(debug({title: 'Sass source'})) // Отслеживание исходника таска css (source tracking of css task)
     .pipe(sass()) // Преобразование Sass в CSS (Sass to CSS conversion)
     .pipe(debug({title: 'Sass'})) // Отслеживание работы плагина Sass (operation tracking of Sass plugin)
-    .pipe(gulp.dest(paths.app.css.dest)) // Сохранение CSS-файлов в папке app/css (saving of CSS files in folder app/css)
+    .pipe(gulp.dest(paths.assets.css.dest)) // Сохранение CSS-файлов в папке assets/css (saving of CSS files in folder assets/css)
     .pipe(debug({title: 'Sass dest'})) // Отслеживание сохранения (saving tracking)
     .pipe(browserSync.stream()); // Browsersync
 });
@@ -100,7 +108,7 @@ gulp.task('inline', function() {
     .pipe(debug({title: 'Inline CSS sourse'})) // Отслеживание исходника таска inline (source tracking of inline task)
     .pipe(inlineCss({ // Преобразование стилей из внешнего файла inline.css в инлайн-стили (conversion styles in inline styles)
         preserveMediaQueries: true, // Сохранение медиа-запросов в тегах style HTML-шаблона (saving of media queries)
-        applyTableAttributes: true // Преобразование табличных стилей в атрибуты (conversion of table styles in attributes)
+        assetslyTableAttributes: true // Преобразование табличных стилей в атрибуты (conversion of table styles in attributes)
     }))
     .pipe(debug({title: 'Inline CSS'})) // Отслеживание преобразования (conversion tracking)
     .pipe(gulp.dest(paths.dist.dest)) // Сохранение результатов в production-папку dist (saving of results in production folder dist)
@@ -113,24 +121,27 @@ gulp.task('send-email', function () {
 });
 
 gulp.task('clean-images', function () {
-  return gulp.src('assets/images', {read: false})
+  return gulp.src(paths.assets.images.clr, {read: true})
     .pipe(clean());
 });
 
 gulp.task('images', function () {
-  return gulp.src('assets/images/**/*')
-    .pipe(imagemin())
-    .pipe(gulp.dest('build/images'));
+  return gulp.src(paths.assets.images.src)
+    .pipe(imagemin([
+      imagemin.jpegtran({progressive: true}),
+      imagemin.optipng({optimizationLevel: 5}),
+    ]))
+    .pipe(gulp.dest(paths.assets.images.dest));
 });
-
-// Таск для сборки
-gulp.task('build', gulp.series('clean', 'html', 'css', 'inline'));
-
-// Таск для запуска разработки
-gulp.task('default', gulp.series('build', 'serve'));
 
 // Таск для сжатия картинок
 gulp.task('images', gulp.series('clean-images', 'images'));
+
+// Таск для запуска разработки
+gulp.task('build', gulp.series('clean', 'html', 'css', 'inline', 'images'));
+
+// Таск для запуска разработки
+gulp.task('default', gulp.series('build', 'server'));
 
 // Таск для тестовой отправки письма
 gulp.task('test', gulp.series('send-email'));

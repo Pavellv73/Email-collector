@@ -2,14 +2,13 @@
   "name": "email_collector",
   "version": "1.0.0",
   "description": "Collector emails",
-  "author": "Pavellv (lp@mstagency.ru)",
+  "author": "Pavellv (pasharus73@gmail.com)",
   "private": true,
   "engines": {
     "node": ">=4"
   },
   "scripts": {
-    "build": "",
-    "dev": "gulp"
+    "build": "gulp"
   },
   "devDependencies": {
     "browser-sync": "^2.18.7",
@@ -24,6 +23,7 @@
     "gulp-pug": "^4.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^4.0.2",
+    "gulp-mailgun": "0.0.7",
     "pug": "^2.0.0-rc.1"
   },
   "dependencies": {
