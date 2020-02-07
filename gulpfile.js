@@ -115,21 +115,24 @@ gulp.task('inline', function() {
     .pipe(debug({title: 'Inline CSS dest'})); // Отслеживание сохранения (saving tracking)
 });
 
+// Такс для тестовой отправки письма на почту
 gulp.task('send-email', function () {
   gulp.src('build/index.html')
     .pipe($.mailgun(emailOptions));
 });
 
+// Такс для очистки дериктории с изображениями
 gulp.task('clean-images', function () {
   return gulp.src(paths.assets.images.clr, {read: true})
     .pipe(clean());
 });
 
+// Такс для сжатия картинок
 gulp.task('images', function () {
   return gulp.src(paths.assets.images.src)
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
-      imagemin.optipng({optimizationLevel: 5}),
+      imagemin.optipng({progressive: true, optimizationLevel: 5}),
     ]))
     .pipe(gulp.dest(paths.assets.images.dest));
 });
@@ -144,4 +147,4 @@ gulp.task('build', gulp.series('clean', 'html', 'css', 'inline', 'images'));
 gulp.task('default', gulp.series('build', 'server'));
 
 // Таск для тестовой отправки письма
-gulp.task('test', gulp.series('send-email'));
+gulp.task('send-email', gulp.series('send-email'));
